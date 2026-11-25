@@ -1,7 +1,14 @@
+package waypoint.model;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Currency;
 import org.junit.jupiter.api.Test;
 
 class MoneyTest {
+    static final Currency INR = Currency.getInstance("INR");
+    static final Currency USD = Currency.getInstance("USD");
+
     @Test void tenPaiseAddedHundredTimesIsExactlyOneRupee() {
         Money sum = Money.ofMinor(0, INR);
         for (int i = 0; i < 100; i++) sum = sum.plus(Money.ofMinor(10, INR));

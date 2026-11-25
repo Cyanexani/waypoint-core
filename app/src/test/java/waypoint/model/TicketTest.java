@@ -1,6 +1,9 @@
+package waypoint.model;
+
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+
 import java.time.Instant;
+import org.junit.jupiter.api.Test;
 
 class TicketTest {
     static final Instant T10 = Instant.parse("2026-03-01T10:00:00Z");

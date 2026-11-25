@@ -1,4 +1,7 @@
+package waypoint.model;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 class SpotTest {
@@ -9,7 +12,7 @@ class SpotTest {
     }
     @Test void releaseIsIdempotent() {
         Spot s = new Spot(new SpotId("S1"));
-        s.release(new VehicleId("V1"));      // never assigned — must not throw
+        s.release(new VehicleId("V1"));      // never assigned, must not throw
         assertTrue(s.isFree());
     }
     @Test void spotIdentityIsItsIdNotItsState() {

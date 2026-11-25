@@ -1,6 +1,7 @@
 package waypoint.model;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /** ENTITY. Invariants:
  *   I1  entry is always present
@@ -10,13 +11,44 @@ import java.time.Instant;
  *   I5  a closed ticket never reopens
  */
 public final class Ticket {
-    // TODO: fields. Exactly two of them are non-final. Work out which.
+    private final TicketId id;
+    private final SpotId spot;
+    private final Instant entry;
+    private Instant exit;   // non-final
+    private Money fare;     // non-final
 
-    // TODO: private constructor + static factory  open(TicketId, SpotId, Instant)
-    // TODO: boolean isOpen()
-    // TODO: Money close(Instant at, FarePolicy policy)
-    //       - reject a second close with TicketAlreadyClosed
-    //       - reject at < entry with IllegalArgumentException
-    //       - set exit and fare together
-    // RULE: no setters. No Instant.now() in this file.
+    private Ticket(TicketId id, SpotId spot, Instant entry) {
+        this.id = Objects.requireNonNull(id, "id");
+        this.spot = Objects.requireNonNull(spot, "spot");
+        this.entry = Objects.requireNonNull(entry, "entry");
+    }
+
+    public static Ticket open(TicketId id, SpotId spot, Instant entry) {
+        return new Ticket(id, spot, entry);
+    }
+
+    public boolean isOpen() {
+        return exit == null;
+    }
+
+    public Money close(Instant at, FarePolicy policy) {
+        Objects.requireNonNull(at, "at");
+        Objects.requireNonNull(policy, "policy");
+        if (!isOpen()) throw new TicketAlreadyClosed("Ticket " + id.value() + " is already closed");
+        if (at.isBefore(entry)) throw new IllegalArgumentException("exit before entry");
+        Money computed = policy.fareFor(entry, at, spot);
+        if (computed == null || computed.isNegative()) {
+            throw new IllegalArgumentException("fare must be non-negative");
+        }
+        // exit and fare are set together, only after everything has been validated
+        this.exit = at;
+        this.fare = computed;
+        return computed;
+    }
+
+    public TicketId id() { return id; }
+    public SpotId spot() { return spot; }
+    public Instant entry() { return entry; }
+    public Instant exit() { return exit; }
+    public Money fare() { return fare; }
 }
